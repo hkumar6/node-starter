@@ -39,6 +39,18 @@ app.use(errorHandler)
 app.use('/', express.static('public'))
 app.get('/api/todos', todos.all)
 app.get('/api/todos/:id', todos.one)
+
+app.get('/webhook', function(req, res) {
+  if (req.query['hub.mode'] === 'subscribe' &&
+      req.query['hub.verify_token'] === <VERIFY_TOKEN>) {
+    console.log("Validating webhook");
+    res.status(200).send(req.query['hub.challenge']);
+  } else {
+    console.error("Failed validation. Make sure the validation tokens match.");
+    res.sendStatus(403);          
+  }  
+});
+
 app.post('/api/todos', todos.create)
 app.put('/api/todos/:id', todos.update)
 app.delete('/api/todos/:id', todos.delete)
